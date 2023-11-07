@@ -5,6 +5,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
 
 @Getter
 @Entity
@@ -26,7 +29,11 @@ public class Memo {
     @Column(nullable = false)
     private String name;
 
+    @Lob
     private String body = "";
+
+    @UpdateTimestamp
+    private Timestamp lastModifiedTimestamp;
 
     @Builder
     public Memo(Long ownerId, Directory directory, String name, String body) {

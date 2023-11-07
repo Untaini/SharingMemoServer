@@ -39,4 +39,5 @@ public class MemoRepositoryTest {
         assertThat(savedMemo.getDirectory().getName()).isEqualTo("root");
         assertThat(rootDir.getChildMemos().size()).isEqualTo(1);
     }
+
 }
