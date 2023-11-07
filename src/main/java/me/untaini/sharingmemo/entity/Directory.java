@@ -29,6 +29,9 @@ public class Directory {
     @OneToMany(mappedBy = "parentDir", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Directory> childDirectories = new ArrayList<>();
 
+    @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Memo> childMemos = new ArrayList<>();
+
     @Builder
     public Directory(Directory parentDir, Long ownerId, String name) {
         this.parentDir = parentDir;
@@ -40,7 +43,12 @@ public class Directory {
         }
     }
 
-    public void addChildDirectory(Directory dir) {
-       childDirectories.add(dir);
+    public void addChildDirectory(Directory directory) {
+       this.childDirectories.add(directory);
     }
+
+    public void addChildMemo(Memo memo) {
+        this.childMemos.add(memo);
+    }
+
 }
