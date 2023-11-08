@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum UserExceptionType implements BaseExceptionType {
     ALREADY_EXIST_ID(HttpStatus.CONFLICT, "이미 존재하는 ID입니다.");
 
-    private HttpStatus httpStatus;
-    private String message;
+    private final HttpStatus httpStatus;
+    private final String message;
 
 }

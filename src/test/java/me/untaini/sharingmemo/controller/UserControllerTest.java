@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private MockMvc mvc;
@@ -72,9 +72,6 @@ public class UserControllerTest {
                 .build();
 
         String registerData = objectMapper.writeValueAsString(userRequest1);
-
-        User user = UserMapper.INSTANCE.userRegisterRequestDTOToUser(userRequest1);
-        UserRegisterResponseDTO userResponse1 = UserMapper.INSTANCE.userToUserRegisterResponseDTO(user);
 
         //given
         given(userService.register(any()))

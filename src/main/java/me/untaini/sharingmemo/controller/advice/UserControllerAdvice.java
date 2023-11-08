@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UserControllerAdvice {
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity handleBaseException(BaseException baseException) {
+    public ResponseEntity<ExceptionDTO> handleBaseException(BaseException baseException) {
         ExceptionDTO exceptionDTO = ExceptionDTO.builder()
                 .message(baseException.getExceptionType().getMessage())
                 .build();

@@ -31,7 +31,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("회원가입 성공")
-    public void testRegisterSuccess() throws Exception {
+    public void testRegisterSuccess() {
         //given
         UserRegisterRequestDTO userRequest = UserRegisterRequestDTO.builder()
                 .sid("test_id")
