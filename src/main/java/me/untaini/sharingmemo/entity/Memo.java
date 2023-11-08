@@ -30,6 +30,7 @@ public class Memo {
     private String name;
 
     @Lob
+    @Column(nullable = false)
     private String body = "";
 
     @UpdateTimestamp
