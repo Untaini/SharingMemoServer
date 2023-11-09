@@ -12,10 +12,11 @@ import org.mapstruct.factory.Mappers;
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    @Mapping(source = "id", target = "sid")
+    @Mapping(source = "userRegisterRequestDTO.id", target = "sid")
+    @Mapping(target = "id", ignore = true)
     User userRegisterRequestDTOToUser(UserRegisterRequestDTO userRegisterRequestDTO);
 
-    @Mapping(source = "sid", target = "id")
+    @Mapping(source = "user.sid", target = "id")
     UserRegisterResponseDTO userToUserRegisterResponseDTO(User user);
 
 

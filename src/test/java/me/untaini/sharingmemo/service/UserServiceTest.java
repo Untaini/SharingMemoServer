@@ -34,8 +34,9 @@ public class UserServiceTest {
     public void testRegisterSuccess() {
         //given
         UserRegisterRequestDTO userRequest = UserRegisterRequestDTO.builder()
-                .sid("test_id")
+                .id("test_id")
                 .password("test_password")
+                .confirmPassword("test_password")
                 .name("test")
                 .build();
 
@@ -45,16 +46,16 @@ public class UserServiceTest {
         //mocking
         given(userRepository.save(any()))
                 .willReturn(user);
-        given(userRepository.findBySid(userRequest.getSid()))
+        given(userRepository.findBySid(userRequest.getId()))
                 .willReturn(user);
 
         //when
         UserRegisterResponseDTO userResponse = userService.register(userRequest);
 
         //then
-        User foundUser = userRepository.findBySid(userResponse.getSid());
+        User foundUser = userRepository.findBySid(userResponse.getId());
 
-        assertThat(userResponse.getSid()).isEqualTo("test_id");
+        assertThat(userResponse.getId()).isEqualTo("test_id");
         assertThat(userResponse.getName()).isEqualTo("test");
 
         assertThat(foundUser.getSid()).isEqualTo("test_id");
@@ -63,17 +64,18 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입 실패")
-    public void testRegisterFailure() {
+    @DisplayName("회원가입 실패 (중복 ID)")
+    public void testRegisterThrowExistId() {
         //given
         UserRegisterRequestDTO userRequest = UserRegisterRequestDTO.builder()
-                .sid("test_id")
+                .id("test_id")
                 .password("test_password2")
+                .confirmPassword("test_password2")
                 .name("test2")
                 .build();
 
         //mocking
-        given(userRepository.existsBySid(userRequest.getSid()))
+        given(userRepository.existsBySid(userRequest.getId()))
                 .willReturn(true);
 
         //when & then
@@ -82,4 +84,24 @@ public class UserServiceTest {
                 .isEqualTo(UserExceptionType.ALREADY_EXIST_ID);
     }
 
+    @Test
+    @DisplayName("회원가입 실패 (비밀번호 불일치)")
+    public void testRegisterThrowNotMatchPassword() {
+        //given
+        UserRegisterRequestDTO userRequest = UserRegisterRequestDTO.builder()
+                .id("test_id")
+                .password("test_password2")
+                .confirmPassword("test_password")
+                .name("test2")
+                .build();
+
+        //mocking
+        given(userRepository.existsBySid(userRequest.getId()))
+                .willReturn(false);
+
+        //when & then
+        assertThat(
+                assertThrows(UserException.class, () -> userService.register(userRequest)).getExceptionType())
+                .isEqualTo(UserExceptionType.NOT_MATCH_PASSWORD);
+    }
 }
