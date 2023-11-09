@@ -18,7 +18,5 @@ public interface UserMapper {
     @Mapping(source = "sid", target = "id")
     UserRegisterResponseDTO userToUserRegisterResponseDTO(User user);
 
-    @Mapping(source = "id", target = "sid")
-    User userLoginRequestDTOToUser(UserLoginRequestDTO userLoginRequestDTO);
 
 }
