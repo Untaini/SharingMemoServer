@@ -1,6 +1,5 @@
 package me.untaini.sharingmemo.mapper;
 
-import me.untaini.sharingmemo.dto.UserLoginRequestDTO;
 import me.untaini.sharingmemo.dto.UserRegisterRequestDTO;
 import me.untaini.sharingmemo.dto.UserRegisterResponseDTO;
 import me.untaini.sharingmemo.entity.User;
