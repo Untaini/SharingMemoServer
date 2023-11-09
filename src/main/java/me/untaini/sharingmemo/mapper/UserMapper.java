@@ -2,6 +2,7 @@ package me.untaini.sharingmemo.mapper;
 
 import me.untaini.sharingmemo.dto.UserRegisterRequestDTO;
 import me.untaini.sharingmemo.dto.UserRegisterResponseDTO;
+import me.untaini.sharingmemo.dto.UserSessionDTO;
 import me.untaini.sharingmemo.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,5 +19,5 @@ public interface UserMapper {
     @Mapping(source = "sid", target = "id")
     UserRegisterResponseDTO userToUserRegisterResponseDTO(User user);
 
-
+    UserSessionDTO userToUserSessionDTO(User user);
 }

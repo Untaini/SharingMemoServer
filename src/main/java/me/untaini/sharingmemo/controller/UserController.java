@@ -1,11 +1,16 @@
 package me.untaini.sharingmemo.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import me.untaini.sharingmemo.constant.UserConstant;
 import me.untaini.sharingmemo.dto.UserLoginRequestDTO;
 import me.untaini.sharingmemo.dto.UserRegisterRequestDTO;
 import me.untaini.sharingmemo.dto.UserRegisterResponseDTO;
+import me.untaini.sharingmemo.dto.UserSessionDTO;
+import me.untaini.sharingmemo.exception.UserException;
+import me.untaini.sharingmemo.exception.type.UserExceptionType;
 import me.untaini.sharingmemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.support.NullValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +34,30 @@ public class UserController {
     }
 
     @DeleteMapping("/unregister")
-    public ResponseEntity<NullValue> unregister(@RequestBody UserLoginRequestDTO userLoginRequestDTO) {
+    public void unregister(@RequestBody UserLoginRequestDTO userLoginRequestDTO) {
         userService.unregister(userLoginRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @PostMapping("/login")
+    public void login(@RequestBody UserLoginRequestDTO userLoginRequestDTO, HttpServletRequest request) {
+        HttpSession httpSession = request.getSession();
+        if (httpSession.getAttribute(UserConstant.LOGIN_USER) != null) {
+            throw new UserException(UserExceptionType.ALREADY_LOGIN);
+        }
+
+        UserSessionDTO userSessionDTO = userService.login(userLoginRequestDTO);
+        httpSession.setAttribute(UserConstant.LOGIN_USER, userSessionDTO);
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession(false);
+
+        if (httpSession == null || httpSession.getAttribute(UserConstant.LOGIN_USER) == null) {
+            throw new UserException(UserExceptionType.NOT_LOGIN);
+        }
+
+        httpSession.invalidate();
     }
 }
