@@ -27,6 +27,10 @@ public class UserService {
             throw new UserException(UserExceptionType.ALREADY_EXIST_ID);
         }
 
+        if (!userRegisterRequestDTO.getPassword().equals(userRegisterRequestDTO.getConfirmPassword())) {
+            throw new UserException(UserExceptionType.NOT_MATCH_PASSWORD);
+        }
+
         User user = UserMapper.INSTANCE.userRegisterRequestDTOToUser(userRegisterRequestDTO);
         userRepository.save(user);
 

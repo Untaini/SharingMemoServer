@@ -11,6 +11,7 @@ public class UserRegisterRequestDTO {
 
     private String id;
     private String password;
+    private String confirmPassword;
     private String name;
 
 }
