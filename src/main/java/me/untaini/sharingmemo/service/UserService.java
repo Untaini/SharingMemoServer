@@ -33,7 +33,7 @@ public class UserService {
         return UserMapper.INSTANCE.userToUserRegisterResponseDTO(user);
     }
 
-    public UserRegisterResponseDTO unregister(UserLoginRequestDTO userLoginRequestDTO) throws BaseException {
+    public void unregister(UserLoginRequestDTO userLoginRequestDTO) throws BaseException {
         User user = userRepository.findBySid(userLoginRequestDTO.getId());
 
         if (user == null) {
@@ -45,8 +45,6 @@ public class UserService {
         }
 
         userRepository.delete(user);
-
-        return UserMapper.INSTANCE.userToUserRegisterResponseDTO(user);
     }
 
 }
