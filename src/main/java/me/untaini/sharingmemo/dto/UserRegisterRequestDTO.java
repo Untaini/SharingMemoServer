@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserRegisterRequestDTO {
 
-    private String sid;
+    private String id;
     private String password;
     private String name;
 
