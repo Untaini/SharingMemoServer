@@ -54,9 +54,12 @@ public class UserServiceTest {
         //then
         User foundUser = userRepository.findBySid(userResponse.getSid());
 
-        assertThat(userRequest.getSid()).isEqualTo(foundUser.getSid());
-        assertThat(userRequest.getPassword()).isEqualTo(foundUser.getPassword());
-        assertThat(userRequest.getName()).isEqualTo(foundUser.getName());
+        assertThat(userResponse.getSid()).isEqualTo("test_id");
+        assertThat(userResponse.getName()).isEqualTo("test");
+
+        assertThat(foundUser.getSid()).isEqualTo("test_id");
+        assertThat(foundUser.getPassword()).isEqualTo("test_password");
+        assertThat(foundUser.getName()).isEqualTo("test");
     }
 
     @Test
