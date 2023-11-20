@@ -41,12 +41,14 @@ public class UserController {
 
     @PostMapping("/login")
     public void login(@RequestBody UserLoginRequestDTO userLoginRequestDTO, HttpServletRequest request) {
-        HttpSession httpSession = request.getSession();
-        if (httpSession.getAttribute(UserConstant.LOGIN_USER) != null) {
+        HttpSession httpSession = request.getSession(false);
+        if (httpSession != null && httpSession.getAttribute(UserConstant.LOGIN_USER) != null) {
             throw new UserException(UserExceptionType.ALREADY_LOGIN);
         }
 
         UserSessionDTO userSessionDTO = userService.login(userLoginRequestDTO);
+
+        httpSession = request.getSession();
         httpSession.setAttribute(UserConstant.LOGIN_USER, userSessionDTO);
     }
 
