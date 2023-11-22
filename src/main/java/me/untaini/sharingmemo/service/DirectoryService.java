@@ -11,7 +11,6 @@ import me.untaini.sharingmemo.repository.DirectoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class DirectoryService {
@@ -40,7 +39,7 @@ public class DirectoryService {
         Directory parentDirectory = directoryRepository.findById(requestDTO.getParentDirId())
                 .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.NOT_FOUND));
 
-        if (parentDirectory.getOwnerId() != requestDTO.getUserId()) {
+        if (parentDirectory.getOwnerId().equals(requestDTO.getUserId())) {
             throw new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
         }
 
