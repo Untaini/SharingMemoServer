@@ -40,8 +40,9 @@ public class DirectoryService {
         Directory parentDirectory = directoryRepository.findById(requestDTO.getParentDirId())
                 .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.NOT_FOUND));
 
-        Optional.of(parentDirectory.getOwnerId() == requestDTO.getUserId())
-                .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH));
+        if (parentDirectory.getOwnerId() != requestDTO.getUserId()) {
+            new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
+        }
 
         parentDirectory.getChildDirectories().stream()
                 .filter(directory -> directory.getName() == requestDTO.getName())
