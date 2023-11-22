@@ -20,7 +20,7 @@ public class Memo {
     private String uuid;
 
     @Column(nullable = false)
-    private long ownerId;
+    private Long ownerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DIRECTORIES_ID", nullable = false)

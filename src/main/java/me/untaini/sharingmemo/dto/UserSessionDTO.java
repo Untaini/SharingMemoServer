@@ -9,6 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserSessionDTO {
 
-    private long id;
+    private Long id;
 
 }

@@ -19,6 +19,6 @@ public class MemoSession {
     private String memoUuid;
 
     @Column(nullable = false)
-    private long ownerId;
+    private Long ownerId;
 
 }
