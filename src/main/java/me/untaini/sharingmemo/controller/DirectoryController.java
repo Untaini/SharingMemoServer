@@ -34,9 +34,7 @@ public class DirectoryController {
         requestDTO.setUserId(getUserId(session));
         requestDTO.setParentDirId(dirId);
 
-        DirectoryCreateResponseDTO responseDTO = directoryService.createDirectory(requestDTO);
-
-        return responseDTO;
+        return directoryService.createDirectory(requestDTO);
     }
 
     public Long getUserId(HttpSession session) throws BaseException {
