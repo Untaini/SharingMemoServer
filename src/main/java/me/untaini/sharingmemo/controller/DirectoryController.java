@@ -1,9 +1,17 @@
 package me.untaini.sharingmemo.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import me.untaini.sharingmemo.constant.UserConstant;
+import me.untaini.sharingmemo.dto.DirectoryCreateRequestDTO;
+import me.untaini.sharingmemo.dto.DirectoryCreateResponseDTO;
+import me.untaini.sharingmemo.dto.UserSessionDTO;
+import me.untaini.sharingmemo.exception.BaseException;
+import me.untaini.sharingmemo.exception.UserException;
+import me.untaini.sharingmemo.exception.type.UserExceptionType;
 import me.untaini.sharingmemo.service.DirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/directory")
@@ -14,5 +22,29 @@ public class DirectoryController {
     @Autowired
     public DirectoryController(DirectoryService directoryService) {
         this.directoryService = directoryService;
+    }
+
+    @PostMapping("/{dirId}/directory")
+    public DirectoryCreateResponseDTO createDirectory(@PathVariable("dirId") Long dirId,
+                                                      @RequestBody DirectoryCreateRequestDTO requestDTO,
+                                                      HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+
+        requestDTO.setUserId(getUserId(session));
+        requestDTO.setParentDirId(dirId);
+
+        DirectoryCreateResponseDTO responseDTO = directoryService.createDirectory(requestDTO);
+
+        return responseDTO;
+    }
+
+    public Long getUserId(HttpSession session) throws BaseException {
+        if (session == null || session.getAttribute(UserConstant.LOGIN_USER) == null) {
+            throw new UserException(UserExceptionType.NOT_LOGIN);
+        }
+
+        UserSessionDTO sessionDTO = (UserSessionDTO) session.getAttribute(UserConstant.LOGIN_USER);
+        return sessionDTO.getId();
     }
 }
