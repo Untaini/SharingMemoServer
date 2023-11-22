@@ -41,13 +41,13 @@ public class DirectoryService {
                 .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.NOT_FOUND));
 
         if (parentDirectory.getOwnerId() != requestDTO.getUserId()) {
-            new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
+            throw new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
         }
 
         parentDirectory.getChildDirectories().stream()
-                .filter(directory -> directory.getName() == requestDTO.getName())
+                .filter(directory -> directory.getName().equals(requestDTO.getName()))
                 .findAny()
-                .ifPresent(dir -> new DirectoryException(DirectoryExceptionType.EXIST_SAME_NAME));
+                .ifPresent(dir -> { throw new DirectoryException(DirectoryExceptionType.EXIST_SAME_NAME); });
 
         Directory directory = DirectoryMapper.INSTANCE.DirectoryCreateRequestDTOToDirectory(requestDTO);
         parentDirectory.addChildDirectory(directory);
