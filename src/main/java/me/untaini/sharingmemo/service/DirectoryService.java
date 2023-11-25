@@ -44,43 +44,30 @@ public class DirectoryService {
 
     @Transactional
     public DirectoryCreateResponseDTO createDirectory(DirectoryCreateRequestDTO requestDTO) {
-        Directory parentDirectory = directoryRepository.findById(requestDTO.getParentDirId())
-                .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.NOT_FOUND));
+        Directory parentDirectory = getDirectoryById(requestDTO.getParentDirId());
 
-        if (!parentDirectory.getOwnerId().equals(requestDTO.getUserId())) {
-            throw new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
-        }
-
-        parentDirectory.getChildDirectories().stream()
-                .filter(directory -> directory.getName().equals(requestDTO.getName()))
-                .findAny()
-                .ifPresent(dir -> { throw new DirectoryException(DirectoryExceptionType.EXIST_SAME_NAME); });
+        checkOwner(parentDirectory, requestDTO.getUserId());
+        checkChildDirectoriesHavingSameName(parentDirectory, requestDTO.getName());
 
         Directory directory = DirectoryMapper.INSTANCE.DirectoryCreateRequestDTOToDirectory(requestDTO);
         parentDirectory.addChildDirectory(directory);
 
-        directoryRepository.save(directory);
+        directoryRepository.save(parentDirectory);
 
         return DirectoryMapper.INSTANCE.DirectoryToDirectoryCreateResponseDTO(directory);
     }
 
     @Transactional
     public DirectoryChangeNameResponseDTO changeDirectoryName(DirectoryChangeNameRequestDTO requestDTO) {
-        Directory directory = directoryRepository.findById(requestDTO.getDirectoryId())
-                .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.NOT_FOUND));
+        Directory directory = getDirectoryById(requestDTO.getDirectoryId());
 
-        if (!directory.getOwnerId().equals(requestDTO.getUserId())) {
-            throw new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
-        }
+        checkOwner(directory, requestDTO.getUserId());
 
         if (directory.getName().equals(requestDTO.getName())) {
             throw new DirectoryException(DirectoryExceptionType.ALREADY_HAS_SAME_NAME);
         }
 
-        directory.getParentDir().getChildDirectories().stream()
-                .filter(childDir -> childDir.getName().equals(requestDTO.getName()))
-                .findAny()
-                .ifPresent(childDir -> { throw new DirectoryException(DirectoryExceptionType.EXIST_SAME_NAME); });
+        checkChildDirectoriesHavingSameName(directory.getParentDir(), requestDTO.getName());
 
         DirectoryChangeNameResponseDTO responseDTO = DirectoryChangeNameResponseDTO.builder()
                 .beforeName(directory.updateName(requestDTO.getName()))
@@ -89,6 +76,23 @@ public class DirectoryService {
         directoryRepository.save(directory);
 
         return responseDTO;
+    }
+
+    public Directory getDirectoryById(Long directoryId) {
+        return directoryRepository.findById(directoryId)
+                .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.NOT_FOUND));
+    }
+
+    public void checkOwner(Directory directory, Long userId) {
+        if (!directory.getOwnerId().equals(userId)) {
+            throw new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
+        }
+    }
+    public void checkChildDirectoriesHavingSameName(Directory directory, String name) {
+        directory.getChildDirectories().stream()
+                .filter(childDir -> childDir.getName().equals(name))
+                .findAny()
+                .ifPresent(childDir -> { throw new DirectoryException(DirectoryExceptionType.EXIST_SAME_NAME); });
     }
 
 }
