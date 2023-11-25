@@ -51,4 +51,10 @@ public class Directory {
         this.childMemos.add(memo);
     }
 
+    public String updateName(String afterName) {
+        String beforeName = this.name;
+        this.name = afterName;
+        return beforeName;
+    }
+
 }
