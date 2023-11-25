@@ -9,6 +9,6 @@ import org.springframework.http.HttpStatus;
 public enum MemoExceptionType implements BaseExceptionType {
     ;
 
-    private HttpStatus httpStatus;
-    private String message;
+    private final HttpStatus httpStatus;
+    private final String message;
 }
