@@ -3,9 +3,7 @@ package me.untaini.sharingmemo.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import me.untaini.sharingmemo.constant.UserConstant;
-import me.untaini.sharingmemo.dto.DirectoryCreateRequestDTO;
-import me.untaini.sharingmemo.dto.DirectoryCreateResponseDTO;
-import me.untaini.sharingmemo.dto.UserSessionDTO;
+import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.exception.BaseException;
 import me.untaini.sharingmemo.exception.UserException;
 import me.untaini.sharingmemo.exception.type.UserExceptionType;
@@ -35,6 +33,19 @@ public class DirectoryController {
         requestDTO.setParentDirId(dirId);
 
         return directoryService.createDirectory(requestDTO);
+    }
+
+    @PutMapping("/{dirId}")
+    public DirectoryChangeNameResponseDTO changeDirectoryName(@PathVariable("dirId") Long dirId,
+                                                              @RequestBody DirectoryChangeNameRequestDTO requestDTO,
+                                                              HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+
+        requestDTO.setUserId(getUserId(session));
+        requestDTO.setDirectoryId(dirId);
+
+        return directoryService.changeDirectoryName(requestDTO);
     }
 
     public Long getUserId(HttpSession session) throws BaseException {
