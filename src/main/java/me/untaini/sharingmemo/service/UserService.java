@@ -17,10 +17,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final DirectoryService directoryService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, DirectoryService directoryService) {
         this.userRepository = userRepository;
+        this.directoryService = directoryService;
     }
 
     public UserRegisterResponseDTO register(UserRegisterRequestDTO userRegisterRequestDTO) throws BaseException {
@@ -33,9 +35,11 @@ public class UserService {
         }
 
         User user = UserMapper.INSTANCE.userRegisterRequestDTOToUser(userRegisterRequestDTO);
-        userRepository.save(user);
 
-        return UserMapper.INSTANCE.userToUserRegisterResponseDTO(user);
+        User savedUser = userRepository.save(user);
+        directoryService.createRootDirectory(savedUser.getId());
+
+        return UserMapper.INSTANCE.userToUserRegisterResponseDTO(savedUser);
     }
 
     public void unregister(UserLoginRequestDTO userLoginRequestDTO) throws BaseException {
