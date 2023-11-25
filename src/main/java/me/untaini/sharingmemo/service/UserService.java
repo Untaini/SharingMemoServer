@@ -45,6 +45,7 @@ public class UserService {
 
         checkLoginCondition(user, userLoginRequestDTO.getPassword());
 
+        directoryService.deleteRootDirectory(user.getId());
         userRepository.delete(user);
     }
 

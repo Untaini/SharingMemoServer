@@ -1,6 +1,5 @@
 package me.untaini.sharingmemo.service;
 
-import jakarta.transaction.Transactional;
 import me.untaini.sharingmemo.dto.DirectoryChangeNameRequestDTO;
 import me.untaini.sharingmemo.dto.DirectoryChangeNameResponseDTO;
 import me.untaini.sharingmemo.dto.DirectoryCreateRequestDTO;
@@ -12,6 +11,7 @@ import me.untaini.sharingmemo.mapper.DirectoryMapper;
 import me.untaini.sharingmemo.repository.DirectoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -36,10 +36,18 @@ public class DirectoryService {
         return savedDirectory.getId();
     }
 
+    @Transactional
     public Long findRootDirectory(Long userId) {
         Directory rootDirectory = directoryRepository.findByOwnerIdAndParentDirIsNull(userId);
 
         return rootDirectory.getId();
+    }
+
+    @Transactional
+    public void deleteRootDirectory(Long userId) {
+
+        directoryRepository.deleteByOwnerIdAndParentDirIsNull(userId);
+
     }
 
     @Transactional
