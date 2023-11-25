@@ -1,5 +1,6 @@
 package me.untaini.sharingmemo.mapper;
 
+import me.untaini.sharingmemo.dto.UserLoginResponseDTO;
 import me.untaini.sharingmemo.dto.UserRegisterRequestDTO;
 import me.untaini.sharingmemo.dto.UserRegisterResponseDTO;
 import me.untaini.sharingmemo.dto.UserSessionDTO;
@@ -20,4 +21,7 @@ public interface UserMapper {
     UserRegisterResponseDTO userToUserRegisterResponseDTO(User user);
 
     UserSessionDTO userToUserSessionDTO(User user);
+
+    @Mapping(source = "sid", target = "id")
+    UserLoginResponseDTO userToUserLoginResponseDTO(User user);
 }

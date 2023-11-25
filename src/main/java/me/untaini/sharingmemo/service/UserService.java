@@ -1,9 +1,6 @@
 package me.untaini.sharingmemo.service;
 
-import me.untaini.sharingmemo.dto.UserLoginRequestDTO;
-import me.untaini.sharingmemo.dto.UserRegisterRequestDTO;
-import me.untaini.sharingmemo.dto.UserRegisterResponseDTO;
-import me.untaini.sharingmemo.dto.UserSessionDTO;
+import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.entity.User;
 import me.untaini.sharingmemo.exception.BaseException;
 import me.untaini.sharingmemo.exception.UserException;
@@ -11,6 +8,7 @@ import me.untaini.sharingmemo.exception.type.UserExceptionType;
 import me.untaini.sharingmemo.mapper.UserMapper;
 import me.untaini.sharingmemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,12 +48,18 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public UserSessionDTO login(UserLoginRequestDTO userLoginRequestDTO) throws BaseException {
+    public Pair<UserSessionDTO, UserLoginResponseDTO> login(UserLoginRequestDTO userLoginRequestDTO) throws BaseException {
         User user = userRepository.findBySid(userLoginRequestDTO.getId());
 
         checkLoginCondition(user, userLoginRequestDTO.getPassword());
 
-        return UserMapper.INSTANCE.userToUserSessionDTO(user);
+        UserSessionDTO sessionDTO = UserMapper.INSTANCE.userToUserSessionDTO(user);
+        UserLoginResponseDTO loginResponseDTO = UserMapper.INSTANCE.userToUserLoginResponseDTO(user);
+        Long rootDirId = directoryService.findRootDirectory(user.getId());
+
+        loginResponseDTO.setRootDirId(rootDirId);
+
+        return Pair.of(sessionDTO, loginResponseDTO);
     }
 
     private void checkLoginCondition(User user, String password) {
