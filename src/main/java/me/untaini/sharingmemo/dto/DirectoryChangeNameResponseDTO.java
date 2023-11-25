@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 @AllArgsConstructor
-public class UserSessionDTO {
+@Builder
+public class DirectoryChangeNameResponseDTO {
 
-    private Long id;
+    private String beforeName;
 
 }

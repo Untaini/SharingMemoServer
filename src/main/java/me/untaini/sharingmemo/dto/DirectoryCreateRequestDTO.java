@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 @AllArgsConstructor
-public class UserSessionDTO {
+@Builder
+public class DirectoryCreateRequestDTO {
 
-    private Long id;
+    private Long userId;
+    private Long parentDirId;
+    private String name;
 
 }

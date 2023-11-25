@@ -3,14 +3,12 @@ package me.untaini.sharingmemo.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import me.untaini.sharingmemo.constant.UserConstant;
-import me.untaini.sharingmemo.dto.UserLoginRequestDTO;
-import me.untaini.sharingmemo.dto.UserRegisterRequestDTO;
-import me.untaini.sharingmemo.dto.UserRegisterResponseDTO;
-import me.untaini.sharingmemo.dto.UserSessionDTO;
+import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.exception.UserException;
 import me.untaini.sharingmemo.exception.type.UserExceptionType;
 import me.untaini.sharingmemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,16 +38,18 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody UserLoginRequestDTO userLoginRequestDTO, HttpServletRequest request) {
+    public UserLoginResponseDTO login(@RequestBody UserLoginRequestDTO userLoginRequestDTO, HttpServletRequest request) {
         HttpSession httpSession = request.getSession(false);
         if (httpSession != null && httpSession.getAttribute(UserConstant.LOGIN_USER) != null) {
             throw new UserException(UserExceptionType.ALREADY_LOGIN);
         }
 
-        UserSessionDTO userSessionDTO = userService.login(userLoginRequestDTO);
+        Pair<UserSessionDTO, UserLoginResponseDTO> dtoPair = userService.login(userLoginRequestDTO);
 
         httpSession = request.getSession();
-        httpSession.setAttribute(UserConstant.LOGIN_USER, userSessionDTO);
+        httpSession.setAttribute(UserConstant.LOGIN_USER, dtoPair.getFirst());
+
+        return dtoPair.getSecond();
     }
 
     @PostMapping("/logout")

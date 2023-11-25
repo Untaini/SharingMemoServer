@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findBySid(String sid);
-    boolean existsBySid(String sid);
+    Boolean existsBySid(String sid);
 
 }

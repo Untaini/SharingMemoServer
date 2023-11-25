@@ -9,4 +9,5 @@ public interface DirectoryRepository extends JpaRepository<Directory, Long> {
 
     List<Directory> findAllByOwnerId(Long ownerId);
     Directory findByOwnerIdAndParentDirIsNull(Long ownerId);
+    void deleteByOwnerIdAndParentDirIsNull(Long ownerId);
 }

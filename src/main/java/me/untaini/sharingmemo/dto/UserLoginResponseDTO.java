@@ -7,8 +7,10 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class UserSessionDTO {
+public class UserLoginResponseDTO {
 
-    private Long id;
+    private String id;
+    private String name;
+    private Long rootDirId;
 
 }
