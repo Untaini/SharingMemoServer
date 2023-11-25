@@ -75,6 +75,10 @@ public class DirectoryService {
             throw new DirectoryException(DirectoryExceptionType.ALREADY_HAS_SAME_NAME);
         }
 
+        if (directory.getParentDir() == null) {
+            throw new DirectoryException(DirectoryExceptionType.CANNOT_CHANGE_ROOT_DIRECOTRY_NAME);
+        }
+
         checkChildDirectoriesHavingSameName(directory.getParentDir(), requestDTO.getName());
 
         DirectoryChangeNameResponseDTO responseDTO = DirectoryChangeNameResponseDTO.builder()
@@ -86,17 +90,17 @@ public class DirectoryService {
         return responseDTO;
     }
 
-    public Directory getDirectoryById(Long directoryId) {
+    private Directory getDirectoryById(Long directoryId) {
         return directoryRepository.findById(directoryId)
                 .orElseThrow(() -> new DirectoryException(DirectoryExceptionType.NOT_FOUND));
     }
 
-    public void checkOwner(Directory directory, Long userId) {
+    private void checkOwner(Directory directory, Long userId) {
         if (!directory.getOwnerId().equals(userId)) {
             throw new DirectoryException(DirectoryExceptionType.OWNER_NOT_MATCH);
         }
     }
-    public void checkChildDirectoriesHavingSameName(Directory directory, String name) {
+    private void checkChildDirectoriesHavingSameName(Directory directory, String name) {
         directory.getChildDirectories().stream()
                 .filter(childDir -> childDir.getName().equals(name))
                 .findAny()
