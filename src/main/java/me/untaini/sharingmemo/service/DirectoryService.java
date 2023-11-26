@@ -59,11 +59,11 @@ public class DirectoryService {
         checkOwner(directory, requestDTO.getUserId());
 
         List<DirectoryInfoDTO> childDirs = directory.getChildDirectories().stream()
-                .map(dir -> DirectoryMapper.INSTANCE.DirectoryToDirectoryInfoDTO(dir))
+                .map(DirectoryMapper.INSTANCE::DirectoryToDirectoryInfoDTO)
                 .toList();
 
         List<MemoInfoDTO> memos = directory.getChildMemos().stream()
-                .map(memo -> MemoMapper.INSTANCE.MemoToMemoInfoDTO(memo))
+                .map(MemoMapper.INSTANCE::MemoToMemoInfoDTO)
                 .toList();
 
         return DirectoryInfoResponseDTO.builder()
@@ -86,6 +86,15 @@ public class DirectoryService {
         directoryRepository.save(parentDirectory);
 
         return DirectoryMapper.INSTANCE.DirectoryToDirectoryCreateResponseDTO(directory);
+    }
+
+    @Transactional
+    public MemoCreateResponseDTO createMemo(MemoCreateRequestDTO requestDTO) {
+        Directory directory = getDirectoryById(requestDTO.getDirectoryId());
+
+        checkOwner(directory, requestDTO.getUserId());
+
+        return memoService.createMemo(directory, requestDTO);
     }
 
     @Transactional
@@ -114,12 +123,16 @@ public class DirectoryService {
     }
 
     @Transactional
-    public MemoCreateResponseDTO createMemo(MemoCreateRequestDTO requestDTO) {
+    public void deleteDirectory(DirectoryDeleteRequestDTO requestDTO) {
         Directory directory = getDirectoryById(requestDTO.getDirectoryId());
 
         checkOwner(directory, requestDTO.getUserId());
 
-        return memoService.createMemo(directory, requestDTO);
+        if (directory.getParentDir() == null) {
+            throw new DirectoryException(DirectoryExceptionType.CANNOT_DELETE_ROOT_DIRECTORY);
+        }
+
+        directoryRepository.delete(directory);
     }
 
     private Directory getDirectoryById(Long directoryId) {

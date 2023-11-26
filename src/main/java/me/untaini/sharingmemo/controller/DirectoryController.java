@@ -78,4 +78,19 @@ public class DirectoryController {
         return directoryService.changeDirectoryName(requestDTO);
     }
 
+    @DeleteMapping("/{dirId}")
+    public void deleteDirectory(@PathVariable("dirId") Long dirId,
+                                HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        DirectoryDeleteRequestDTO requestDTO = DirectoryDeleteRequestDTO.builder()
+                .directoryId(dirId)
+                .userId(userId)
+                .build();
+
+        directoryService.deleteDirectory(requestDTO);
+    }
+
 }
