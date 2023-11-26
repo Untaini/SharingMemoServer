@@ -2,13 +2,14 @@ package me.untaini.sharingmemo.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import me.untaini.sharingmemo.dto.MemoChangeNameRequestDTO;
-import me.untaini.sharingmemo.dto.MemoChangeNameResponseDTO;
-import me.untaini.sharingmemo.dto.MemoDeleteRequestDTO;
-import me.untaini.sharingmemo.dto.MemoUpdateContentRequestDTO;
+import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.service.HttpSessionService;
 import me.untaini.sharingmemo.service.MemoService;
+import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.ServletWebRequest;
+
+import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/memo")
@@ -20,6 +21,28 @@ public class MemoController {
     public MemoController(MemoService memoService, HttpSessionService httpSessionService) {
         this.memoService = memoService;
         this.httpSessionService = httpSessionService;
+    }
+
+    @GetMapping("/{memoId}")
+    public MemoInfoResponseDTO getMemoInfo(@PathVariable("memoId") Long memoId,
+                                           HttpServletRequest httpServletRequest,
+                                           ServletWebRequest webRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        MemoInfoRequestDTO requestDTO = MemoInfoRequestDTO.builder()
+                .memoId(memoId)
+                .userId(userId)
+                .build();
+
+        Pair<Timestamp, MemoInfoResponseDTO> dtoPair = memoService.getMemoInfo(requestDTO);
+
+        if (webRequest.checkNotModified(dtoPair.getFirst().getTime())) {
+            return null;
+        }
+
+        return dtoPair.getSecond();
     }
 
     @PutMapping("/{memoId}/name")

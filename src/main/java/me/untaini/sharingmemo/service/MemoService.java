@@ -11,8 +11,11 @@ import me.untaini.sharingmemo.mapper.MemoMapper;
 import me.untaini.sharingmemo.repository.MemoRepository;
 import me.untaini.sharingmemo.repository.MemoSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Timestamp;
 
 @Service
 public class MemoService {
@@ -24,6 +27,17 @@ public class MemoService {
     public MemoService(MemoRepository memoRepository, MemoSessionRepository memoSessionRepository) {
         this.memoRepository = memoRepository;
         this.memoSessionRepository = memoSessionRepository;
+    }
+
+    @Transactional
+    public Pair<Timestamp, MemoInfoResponseDTO> getMemoInfo(MemoInfoRequestDTO requestDTO) {
+        Memo memo = getMemoById(requestDTO.getMemoId());
+
+        checkOwner(memo, requestDTO.getUserId());
+
+        MemoInfoResponseDTO responseDTO = MemoMapper.INSTANCE.MemoToMemoInfoResponseDTO(memo);
+
+        return Pair.of(memo.getLastModifiedTimestamp(), responseDTO);
     }
 
     @Transactional
