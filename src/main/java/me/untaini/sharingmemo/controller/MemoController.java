@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import me.untaini.sharingmemo.dto.MemoChangeNameRequestDTO;
 import me.untaini.sharingmemo.dto.MemoChangeNameResponseDTO;
+import me.untaini.sharingmemo.dto.MemoUpdateContentRequestDTO;
 import me.untaini.sharingmemo.service.HttpSessionService;
 import me.untaini.sharingmemo.service.MemoService;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +35,17 @@ public class MemoController {
         return memoService.changeMemoName(requestDTO);
     }
 
+    @PutMapping("{memoId}/content")
+    public void updateContent(@PathVariable("memoId") Long memoId,
+                              @RequestBody MemoUpdateContentRequestDTO requestDTO,
+                              HttpServletRequest httpServletRequest) {
 
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        requestDTO.setOwnerId(userId);
+        requestDTO.setMemoId(memoId);
+
+        memoService.updateContent(requestDTO);
+    }
 }

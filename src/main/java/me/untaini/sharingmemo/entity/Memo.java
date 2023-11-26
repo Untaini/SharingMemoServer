@@ -31,19 +31,19 @@ public class Memo {
 
     @Lob
     @Column(nullable = false)
-    private String body = "";
+    private String content = "";
 
     @UpdateTimestamp
     private Timestamp lastModifiedTimestamp;
 
     @Builder
-    public Memo(Long ownerId, Directory directory, String name, String body) {
+    public Memo(Long ownerId, Directory directory, String name, String content) {
         this.ownerId = ownerId;
         this.directory = directory;
         this.name = name;
 
-        if (body != null) {
-            this.body = body;
+        if (content != null) {
+            this.content = content;
         }
 
         this.directory.addChildMemo(this);
@@ -53,5 +53,9 @@ public class Memo {
         String beforeName = this.name;
         this.name = afterName;
         return beforeName;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
     }
 }

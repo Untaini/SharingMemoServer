@@ -1,9 +1,6 @@
 package me.untaini.sharingmemo.service;
 
-import me.untaini.sharingmemo.dto.MemoChangeNameRequestDTO;
-import me.untaini.sharingmemo.dto.MemoChangeNameResponseDTO;
-import me.untaini.sharingmemo.dto.MemoCreateRequestDTO;
-import me.untaini.sharingmemo.dto.MemoCreateResponseDTO;
+import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.entity.Directory;
 import me.untaini.sharingmemo.entity.Memo;
 import me.untaini.sharingmemo.exception.DirectoryException;
@@ -56,6 +53,17 @@ public class MemoService {
         memoRepository.save(memo);
 
         return responseDTO;
+    }
+
+    @Transactional
+    public void updateContent(MemoUpdateContentRequestDTO requestDTO) {
+        Memo memo = getMemoById(requestDTO.getMemoId());
+
+        checkOwner(memo, requestDTO.getOwnerId());
+
+        memo.updateContent(requestDTO.getContent());
+
+        memoRepository.save(memo);
     }
 
     private Memo getMemoById(Long memoId) {
