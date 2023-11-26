@@ -5,10 +5,13 @@ import me.untaini.sharingmemo.entity.Directory;
 import me.untaini.sharingmemo.exception.DirectoryException;
 import me.untaini.sharingmemo.exception.type.DirectoryExceptionType;
 import me.untaini.sharingmemo.mapper.DirectoryMapper;
+import me.untaini.sharingmemo.mapper.MemoMapper;
 import me.untaini.sharingmemo.repository.DirectoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -50,6 +53,27 @@ public class DirectoryService {
     }
 
     @Transactional
+    public DirectoryInfoResponseDTO getDirectoryInfo(DirectoryInfoRequestDTO requestDTO) {
+        Directory directory = getDirectoryById(requestDTO.getDirectoryId());
+
+        checkOwner(directory, requestDTO.getUserId());
+
+        List<DirectoryInfoDTO> childDirs = directory.getChildDirectories().stream()
+                .map(DirectoryMapper.INSTANCE::DirectoryToDirectoryInfoDTO)
+                .toList();
+
+        List<MemoInfoDTO> memos = directory.getChildMemos().stream()
+                .map(MemoMapper.INSTANCE::MemoToMemoInfoDTO)
+                .toList();
+
+        return DirectoryInfoResponseDTO.builder()
+                .name(directory.getName())
+                .childDirs(childDirs)
+                .memos(memos)
+                .build();
+    }
+
+    @Transactional
     public DirectoryCreateResponseDTO createDirectory(DirectoryCreateRequestDTO requestDTO) {
         Directory parentDirectory = getDirectoryById(requestDTO.getParentDirId());
 
@@ -62,6 +86,15 @@ public class DirectoryService {
         directoryRepository.save(parentDirectory);
 
         return DirectoryMapper.INSTANCE.DirectoryToDirectoryCreateResponseDTO(directory);
+    }
+
+    @Transactional
+    public MemoCreateResponseDTO createMemo(MemoCreateRequestDTO requestDTO) {
+        Directory directory = getDirectoryById(requestDTO.getDirectoryId());
+
+        checkOwner(directory, requestDTO.getUserId());
+
+        return memoService.createMemo(directory, requestDTO);
     }
 
     @Transactional
@@ -90,12 +123,16 @@ public class DirectoryService {
     }
 
     @Transactional
-    public MemoCreateResponseDTO createMemo(MemoCreateRequestDTO requestDTO) {
+    public void deleteDirectory(DirectoryDeleteRequestDTO requestDTO) {
         Directory directory = getDirectoryById(requestDTO.getDirectoryId());
 
         checkOwner(directory, requestDTO.getUserId());
 
-        return memoService.createMemo(directory, requestDTO);
+        if (directory.getParentDir() == null) {
+            throw new DirectoryException(DirectoryExceptionType.CANNOT_DELETE_ROOT_DIRECTORY);
+        }
+
+        directoryRepository.delete(directory);
     }
 
     private Directory getDirectoryById(Long directoryId) {

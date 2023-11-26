@@ -21,6 +21,21 @@ public class DirectoryController {
         this.httpSessionService = httpSessionService;
     }
 
+    @GetMapping("/{dirId}")
+    public DirectoryInfoResponseDTO getDirectoryInfo(@PathVariable("dirId") Long dirId,
+                                                     HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        DirectoryInfoRequestDTO requestDTO = DirectoryInfoRequestDTO.builder()
+                .directoryId(dirId)
+                .userId(userId)
+                .build();
+
+        return directoryService.getDirectoryInfo(requestDTO);
+    }
+
     @PostMapping("/{dirId}/directory")
     public DirectoryCreateResponseDTO createDirectory(@PathVariable("dirId") Long dirId,
                                                       @RequestBody DirectoryCreateRequestDTO requestDTO,
@@ -61,6 +76,21 @@ public class DirectoryController {
         requestDTO.setDirectoryId(dirId);
 
         return directoryService.changeDirectoryName(requestDTO);
+    }
+
+    @DeleteMapping("/{dirId}")
+    public void deleteDirectory(@PathVariable("dirId") Long dirId,
+                                HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        DirectoryDeleteRequestDTO requestDTO = DirectoryDeleteRequestDTO.builder()
+                .directoryId(dirId)
+                .userId(userId)
+                .build();
+
+        directoryService.deleteDirectory(requestDTO);
     }
 
 }
