@@ -1,9 +1,6 @@
 package me.untaini.sharingmemo.service;
 
-import me.untaini.sharingmemo.dto.DirectoryChangeNameRequestDTO;
-import me.untaini.sharingmemo.dto.DirectoryChangeNameResponseDTO;
-import me.untaini.sharingmemo.dto.DirectoryCreateRequestDTO;
-import me.untaini.sharingmemo.dto.DirectoryCreateResponseDTO;
+import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.entity.Directory;
 import me.untaini.sharingmemo.exception.DirectoryException;
 import me.untaini.sharingmemo.exception.type.DirectoryExceptionType;
@@ -18,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class DirectoryService {
 
     private final DirectoryRepository directoryRepository;
+    private final MemoService memoService;
 
     @Autowired
-    public DirectoryService(DirectoryRepository directoryRepository) {
+    public DirectoryService(DirectoryRepository directoryRepository, MemoService memoService) {
         this.directoryRepository = directoryRepository;
+        this.memoService = memoService;
     }
 
     @Transactional
@@ -76,7 +75,7 @@ public class DirectoryService {
         }
 
         if (directory.getParentDir() == null) {
-            throw new DirectoryException(DirectoryExceptionType.CANNOT_CHANGE_ROOT_DIRECOTRY_NAME);
+            throw new DirectoryException(DirectoryExceptionType.CANNOT_CHANGE_ROOT_DIRECTORY_NAME);
         }
 
         checkChildDirectoriesHavingSameName(directory.getParentDir(), requestDTO.getName());
@@ -88,6 +87,15 @@ public class DirectoryService {
         directoryRepository.save(directory);
 
         return responseDTO;
+    }
+
+    @Transactional
+    public MemoCreateResponseDTO createMemo(MemoCreateRequestDTO requestDTO) {
+        Directory directory = getDirectoryById(requestDTO.getDirectoryId());
+
+        checkOwner(directory, requestDTO.getUserId());
+
+        return memoService.createMemo(directory, requestDTO);
     }
 
     private Directory getDirectoryById(Long directoryId) {

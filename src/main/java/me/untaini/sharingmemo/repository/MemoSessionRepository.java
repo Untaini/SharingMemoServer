@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemoSessionRepository extends JpaRepository<MemoSession, String> {
 
-    MemoSession findByMemoUuid(String memoUuid);
-    Boolean existsByMemoUuid(String memoUuid);
+    MemoSession findByMemoId(Long memoId);
+    Boolean existsByMemoId(Long memoId);
 
 }

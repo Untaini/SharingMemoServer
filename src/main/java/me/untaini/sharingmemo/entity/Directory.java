@@ -45,6 +45,7 @@ public class Directory {
 
     public void addChildDirectory(Directory directory) {
        this.childDirectories.add(directory);
+       directory.parentDir = this;
     }
 
     public void addChildMemo(Memo memo) {
