@@ -48,4 +48,10 @@ public class Memo {
 
         this.directory.addChildMemo(this);
     }
+
+    public String updateName(String afterName) {
+        String beforeName = this.name;
+        this.name = afterName;
+        return beforeName;
+    }
 }
