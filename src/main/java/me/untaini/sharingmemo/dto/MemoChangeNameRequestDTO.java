@@ -10,6 +10,7 @@ import lombok.Data;
 public class MemoChangeNameRequestDTO {
 
     private Long memoId;
+    private Long ownerId;
     private String name;
 
 }
