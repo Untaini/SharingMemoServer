@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum MemoExceptionType implements BaseExceptionType {
 
-    EXIST_SAME_NAME(HttpStatus.CONFLICT, "같은 이름이 디렉토리에 있습니다.")
+    NOT_FOUND(HttpStatus.NOT_FOUND, "해당 메모를 찾을 수 없습니다."),
+    OWNER_NOT_MATCH(HttpStatus.BAD_REQUEST, "메모를 소유하지 않았습니다."),
+    EXIST_SAME_NAME(HttpStatus.CONFLICT, "같은 이름이 디렉토리에 있습니다."),
+    ALREADY_HAS_SAME_NAME(HttpStatus.BAD_REQUEST, "해당 메모는 이미 그 이름을 가지고 있습니다.")
     ;
 
     private final HttpStatus httpStatus;
