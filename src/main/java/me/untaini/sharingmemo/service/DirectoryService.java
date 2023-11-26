@@ -5,10 +5,13 @@ import me.untaini.sharingmemo.entity.Directory;
 import me.untaini.sharingmemo.exception.DirectoryException;
 import me.untaini.sharingmemo.exception.type.DirectoryExceptionType;
 import me.untaini.sharingmemo.mapper.DirectoryMapper;
+import me.untaini.sharingmemo.mapper.MemoMapper;
 import me.untaini.sharingmemo.repository.DirectoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -47,6 +50,27 @@ public class DirectoryService {
 
         directoryRepository.deleteByOwnerIdAndParentDirIsNull(userId);
 
+    }
+
+    @Transactional
+    public DirectoryInfoResponseDTO getDirectoryInfo(DirectoryInfoRequestDTO requestDTO) {
+        Directory directory = getDirectoryById(requestDTO.getDirectoryId());
+
+        checkOwner(directory, requestDTO.getUserId());
+
+        List<DirectoryInfoDTO> childDirs = directory.getChildDirectories().stream()
+                .map(dir -> DirectoryMapper.INSTANCE.DirectoryToDirectoryInfoDTO(dir))
+                .toList();
+
+        List<MemoInfoDTO> memos = directory.getChildMemos().stream()
+                .map(memo -> MemoMapper.INSTANCE.MemoToMemoInfoDTO(memo))
+                .toList();
+
+        return DirectoryInfoResponseDTO.builder()
+                .name(directory.getName())
+                .childDirs(childDirs)
+                .memos(memos)
+                .build();
     }
 
     @Transactional

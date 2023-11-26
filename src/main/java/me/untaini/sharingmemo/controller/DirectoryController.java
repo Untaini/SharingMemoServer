@@ -21,6 +21,21 @@ public class DirectoryController {
         this.httpSessionService = httpSessionService;
     }
 
+    @GetMapping("/{dirId}")
+    public DirectoryInfoResponseDTO getDirectoryInfo(@PathVariable("dirId") Long dirId,
+                                                     HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        DirectoryInfoRequestDTO requestDTO = DirectoryInfoRequestDTO.builder()
+                .directoryId(dirId)
+                .userId(userId)
+                .build();
+
+        return directoryService.getDirectoryInfo(requestDTO);
+    }
+
     @PostMapping("/{dirId}/directory")
     public DirectoryCreateResponseDTO createDirectory(@PathVariable("dirId") Long dirId,
                                                       @RequestBody DirectoryCreateRequestDTO requestDTO,

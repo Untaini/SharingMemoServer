@@ -2,6 +2,7 @@ package me.untaini.sharingmemo.mapper;
 
 import me.untaini.sharingmemo.dto.MemoCreateRequestDTO;
 import me.untaini.sharingmemo.dto.MemoCreateResponseDTO;
+import me.untaini.sharingmemo.dto.MemoInfoDTO;
 import me.untaini.sharingmemo.entity.Directory;
 import me.untaini.sharingmemo.entity.Memo;
 import org.mapstruct.Mapper;
@@ -18,6 +19,7 @@ public interface MemoMapper {
     @Mapping(source = "requestDTO.name", target = "name")
     Memo DirectoryAndMemoCreateRequestDTOToMemo(Directory directory, MemoCreateRequestDTO requestDTO);
 
-
     MemoCreateResponseDTO MemoToMemoCreateResponseDTO(Memo memo);
+
+    MemoInfoDTO MemoToMemoInfoDTO(Memo memo);
 }
