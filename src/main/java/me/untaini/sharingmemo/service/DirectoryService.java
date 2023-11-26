@@ -75,7 +75,7 @@ public class DirectoryService {
         }
 
         if (directory.getParentDir() == null) {
-            throw new DirectoryException(DirectoryExceptionType.CANNOT_CHANGE_ROOT_DIRECOTRY_NAME);
+            throw new DirectoryException(DirectoryExceptionType.CANNOT_CHANGE_ROOT_DIRECTORY_NAME);
         }
 
         checkChildDirectoriesHavingSameName(directory.getParentDir(), requestDTO.getName());
