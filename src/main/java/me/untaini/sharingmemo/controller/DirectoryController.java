@@ -35,6 +35,19 @@ public class DirectoryController {
         return directoryService.createDirectory(requestDTO);
     }
 
+    @PostMapping("/{dirId}/memo")
+    public MemoCreateResponseDTO createMemo(@PathVariable("dirId") Long dirId,
+                                            @RequestBody MemoCreateRequestDTO requestDTO,
+                                            HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+
+        requestDTO.setUserId(getUserId(session));
+        requestDTO.setDirectoryId(dirId);
+
+        return directoryService.createMemo(requestDTO);
+    }
+
     @PutMapping("/{dirId}")
     public DirectoryChangeNameResponseDTO changeDirectoryName(@PathVariable("dirId") Long dirId,
                                                               @RequestBody DirectoryChangeNameRequestDTO requestDTO,
