@@ -12,13 +12,9 @@ import lombok.*;
 public class MemoSession {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
 
     @Column(nullable = false, unique = true)
-    private String memoUuid;
-
-    @Column(nullable = false)
-    private Long ownerId;
+    private Long memoId;
 
 }
