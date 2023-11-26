@@ -1,11 +1,8 @@
 package me.untaini.sharingmemo.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import me.untaini.sharingmemo.constant.UserConstant;
 import me.untaini.sharingmemo.dto.*;
-import me.untaini.sharingmemo.exception.UserException;
-import me.untaini.sharingmemo.exception.type.UserExceptionType;
+import me.untaini.sharingmemo.service.HttpSessionService;
 import me.untaini.sharingmemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -18,10 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final HttpSessionService httpSessionService;
 
     @Autowired
-    UserController(UserService userService) {
+    UserController(UserService userService, HttpSessionService httpSessionService) {
         this.userService = userService;
+        this.httpSessionService = httpSessionService;
     }
 
     @PostMapping("/register")
@@ -39,27 +38,17 @@ public class UserController {
 
     @PostMapping("/login")
     public UserLoginResponseDTO login(@RequestBody UserLoginRequestDTO userLoginRequestDTO, HttpServletRequest request) {
-        HttpSession httpSession = request.getSession(false);
-        if (httpSession != null && httpSession.getAttribute(UserConstant.LOGIN_USER) != null) {
-            throw new UserException(UserExceptionType.ALREADY_LOGIN);
-        }
+        httpSessionService.checkAlreadyLogin(request.getSession(false));
 
         Pair<UserSessionDTO, UserLoginResponseDTO> dtoPair = userService.login(userLoginRequestDTO);
 
-        httpSession = request.getSession();
-        httpSession.setAttribute(UserConstant.LOGIN_USER, dtoPair.getFirst());
+        httpSessionService.saveLogin(request.getSession(), dtoPair.getFirst());
 
         return dtoPair.getSecond();
     }
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {
-        HttpSession httpSession = request.getSession(false);
-
-        if (httpSession == null || httpSession.getAttribute(UserConstant.LOGIN_USER) == null) {
-            throw new UserException(UserExceptionType.NOT_LOGIN);
-        }
-
-        httpSession.invalidate();
+        httpSessionService.expireLogin(request.getSession(false));
     }
 }
