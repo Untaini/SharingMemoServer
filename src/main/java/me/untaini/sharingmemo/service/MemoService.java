@@ -9,6 +9,7 @@ import me.untaini.sharingmemo.exception.type.DirectoryExceptionType;
 import me.untaini.sharingmemo.exception.type.MemoExceptionType;
 import me.untaini.sharingmemo.mapper.MemoMapper;
 import me.untaini.sharingmemo.repository.MemoRepository;
+import me.untaini.sharingmemo.repository.MemoSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemoService {
 
     private final MemoRepository memoRepository;
+    private final MemoSessionRepository memoSessionRepository;
 
     @Autowired
-    public MemoService(MemoRepository memoRepository) {
+    public MemoService(MemoRepository memoRepository, MemoSessionRepository memoSessionRepository) {
         this.memoRepository = memoRepository;
+        this.memoSessionRepository = memoSessionRepository;
     }
 
     @Transactional
@@ -64,6 +67,19 @@ public class MemoService {
         memo.updateContent(requestDTO.getContent());
 
         memoRepository.save(memo);
+    }
+
+    @Transactional
+    public void deleteMemo(MemoDeleteRequestDTO requestDTO) {
+        Memo memo = getMemoById(requestDTO.getMemoId());
+
+        checkOwner(memo, requestDTO.getUserId());
+
+        if (memoSessionRepository.existsByMemoId(memo.getId())) {
+            throw new MemoException(MemoExceptionType.CANNOT_DELETE_BECAUSE_OF_OPENING);
+        }
+
+        memoRepository.delete(memo);
     }
 
     private Memo getMemoById(Long memoId) {

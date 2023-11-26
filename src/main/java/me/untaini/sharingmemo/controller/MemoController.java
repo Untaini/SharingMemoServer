@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import me.untaini.sharingmemo.dto.MemoChangeNameRequestDTO;
 import me.untaini.sharingmemo.dto.MemoChangeNameResponseDTO;
+import me.untaini.sharingmemo.dto.MemoDeleteRequestDTO;
 import me.untaini.sharingmemo.dto.MemoUpdateContentRequestDTO;
 import me.untaini.sharingmemo.service.HttpSessionService;
 import me.untaini.sharingmemo.service.MemoService;
@@ -21,7 +22,7 @@ public class MemoController {
         this.httpSessionService = httpSessionService;
     }
 
-    @PutMapping("{memoId}/name")
+    @PutMapping("/{memoId}/name")
     public MemoChangeNameResponseDTO changeMemoName(@PathVariable("memoId") Long memoId,
                                                     @RequestBody MemoChangeNameRequestDTO requestDTO,
                                                     HttpServletRequest httpServletRequest) {
@@ -35,7 +36,7 @@ public class MemoController {
         return memoService.changeMemoName(requestDTO);
     }
 
-    @PutMapping("{memoId}/content")
+    @PutMapping("/{memoId}/content")
     public void updateContent(@PathVariable("memoId") Long memoId,
                               @RequestBody MemoUpdateContentRequestDTO requestDTO,
                               HttpServletRequest httpServletRequest) {
@@ -47,5 +48,20 @@ public class MemoController {
         requestDTO.setMemoId(memoId);
 
         memoService.updateContent(requestDTO);
+    }
+
+    @DeleteMapping("/{memoId}")
+    public void deleteMemo(@PathVariable("memoId") Long memoId,
+                           HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        MemoDeleteRequestDTO requestDTO = MemoDeleteRequestDTO.builder()
+                .memoId(memoId)
+                .userId(userId)
+                .build();
+
+        memoService.deleteMemo(requestDTO);
     }
 }
