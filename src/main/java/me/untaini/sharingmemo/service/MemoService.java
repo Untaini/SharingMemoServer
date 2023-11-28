@@ -3,11 +3,13 @@ package me.untaini.sharingmemo.service;
 import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.entity.Directory;
 import me.untaini.sharingmemo.entity.Memo;
+import me.untaini.sharingmemo.entity.MemoSession;
 import me.untaini.sharingmemo.exception.DirectoryException;
 import me.untaini.sharingmemo.exception.MemoException;
 import me.untaini.sharingmemo.exception.type.DirectoryExceptionType;
 import me.untaini.sharingmemo.exception.type.MemoExceptionType;
 import me.untaini.sharingmemo.mapper.MemoMapper;
+import me.untaini.sharingmemo.mapper.MemoSessionMapper;
 import me.untaini.sharingmemo.repository.MemoRepository;
 import me.untaini.sharingmemo.repository.MemoSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,9 +98,41 @@ public class MemoService {
         memoRepository.delete(memo);
     }
 
+    @Transactional
+    public MemoSessionDTO openMemo(MemoOpeningRequestDTO requestDTO) {
+        Memo memo = getMemoById(requestDTO.getMemoId());
+
+        checkOwner(memo, requestDTO.getUserId());
+
+        if (memoSessionRepository.existsByMemoId(requestDTO.getMemoId())) {
+            throw new MemoException(MemoExceptionType.ALREADY_OPEN);
+        }
+
+        if (memoSessionRepository.existsById(requestDTO.getSessionId())) {
+            throw new MemoException(MemoExceptionType.CANNOT_OPEN_MORE);
+        }
+
+        MemoSession memoSession = MemoSessionMapper.INSTANCE.MemoOpeningRequestDTOToMemoSession(requestDTO);
+
+        memoSessionRepository.save(memoSession);
+
+        return MemoSessionMapper.INSTANCE.MemoSessionToMemoSessionDTO(memoSession);
+    }
+
+    @Transactional
+    public void closeMemo(MemoClosingRequestDTO requestDTO) {
+        if (!memoSessionRepository.existsById(requestDTO.getSessionId())) {
+            throw new MemoException(MemoExceptionType.MEMO_NOT_OPEN);
+        }
+
+        MemoSession session = memoSessionRepository.getReferenceById(requestDTO.getSessionId());
+
+        memoSessionRepository.delete(session);
+    }
+
     private Memo getMemoById(Long memoId) {
         return memoRepository.findById(memoId)
-                .orElseThrow(() -> new MemoException(MemoExceptionType.NOT_FOUND));
+                .orElseThrow(() -> new MemoException(MemoExceptionType.MEMO_NOT_FOUND));
     }
 
     private void checkOwner(Memo memo, Long userId) {

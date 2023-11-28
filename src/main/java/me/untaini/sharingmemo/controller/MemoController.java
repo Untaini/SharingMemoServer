@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import me.untaini.sharingmemo.dto.*;
 import me.untaini.sharingmemo.service.HttpSessionService;
 import me.untaini.sharingmemo.service.MemoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -18,6 +19,7 @@ public class MemoController {
     private final MemoService memoService;
     private final HttpSessionService httpSessionService;
 
+    @Autowired
     public MemoController(MemoService memoService, HttpSessionService httpSessionService) {
         this.memoService = memoService;
         this.httpSessionService = httpSessionService;
@@ -86,5 +88,39 @@ public class MemoController {
                 .build();
 
         memoService.deleteMemo(requestDTO);
+    }
+
+    @PostMapping("/{memoId}/open")
+    public void openMemo(@PathVariable("memoId") Long memoId,
+                         HttpServletRequest httpServletRequest) {
+
+        HttpSession session = httpServletRequest.getSession(false);
+        Long userId = httpSessionService.checkLogin(session);
+
+        MemoOpeningRequestDTO requestDTO = MemoOpeningRequestDTO.builder()
+                .memoId(memoId)
+                .userId(userId)
+                .sessionId(session.getId())
+                .build();
+
+        MemoSessionDTO memoSession = memoService.openMemo(requestDTO);
+
+        httpSessionService.saveOpenedMemo(session, memoSession);
+    }
+
+    @PostMapping("/close")
+    public void closeMemo(HttpServletRequest httpServletRequest) {
+        HttpSession session = httpServletRequest.getSession(false);
+
+        httpSessionService.checkLogin(session);
+        Long memoId = httpSessionService.checkOpenedMemo(session);
+
+        MemoClosingRequestDTO requestDTO = MemoClosingRequestDTO.builder()
+                .memoId(memoId)
+                .sessionId(session.getId())
+                .build();
+
+        memoService.closeMemo(requestDTO);
+        httpSessionService.deleteOpenedMemo(session);
     }
 }
