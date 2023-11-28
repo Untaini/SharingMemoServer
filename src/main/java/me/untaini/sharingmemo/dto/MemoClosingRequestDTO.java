@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class MemoUpdateContentRequestDTO {
+public class MemoClosingRequestDTO {
 
+    private String sessionId;
     private Long memoId;
-    private String content;
 
 }

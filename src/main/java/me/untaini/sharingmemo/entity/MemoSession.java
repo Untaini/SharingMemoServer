@@ -12,7 +12,7 @@ import lombok.*;
 public class MemoSession {
 
     @Id
-    private String uuid;
+    private String sessionId;
 
     @Column(nullable = false, unique = true)
     private Long memoId;

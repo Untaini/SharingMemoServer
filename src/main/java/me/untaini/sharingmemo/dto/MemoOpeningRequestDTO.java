@@ -7,9 +7,10 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class MemoUpdateContentRequestDTO {
+public class MemoOpeningRequestDTO {
 
+    private String sessionId;
     private Long memoId;
-    private String content;
+    private Long userId;
 
 }
