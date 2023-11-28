@@ -61,15 +61,15 @@ public class MemoController {
         return memoService.changeMemoName(requestDTO);
     }
 
-    @PutMapping("/{memoId}/content")
-    public void updateContent(@PathVariable("memoId") Long memoId,
-                              @RequestBody MemoUpdateContentRequestDTO requestDTO,
+    @PutMapping("/content")
+    public void updateContent(@RequestBody MemoUpdateContentRequestDTO requestDTO,
                               HttpServletRequest httpServletRequest) {
 
         HttpSession session = httpServletRequest.getSession(false);
-        Long userId = httpSessionService.checkLogin(session);
 
-        requestDTO.setOwnerId(userId);
+        httpSessionService.checkLogin(session);
+        Long memoId = httpSessionService.checkOpenedMemo(session);
+
         requestDTO.setMemoId(memoId);
 
         memoService.updateContent(requestDTO);

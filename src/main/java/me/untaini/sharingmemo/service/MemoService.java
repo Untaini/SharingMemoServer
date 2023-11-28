@@ -78,8 +78,6 @@ public class MemoService {
     public void updateContent(MemoUpdateContentRequestDTO requestDTO) {
         Memo memo = getMemoById(requestDTO.getMemoId());
 
-        checkOwner(memo, requestDTO.getOwnerId());
-
         memo.updateContent(requestDTO.getContent());
 
         memoRepository.save(memo);

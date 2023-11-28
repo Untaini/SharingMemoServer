@@ -10,7 +10,6 @@ import lombok.Data;
 public class MemoUpdateContentRequestDTO {
 
     private Long memoId;
-    private Long ownerId;
     private String content;
 
 }
