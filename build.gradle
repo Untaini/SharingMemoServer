@@ -11,6 +11,11 @@ java {
 	sourceCompatibility = '17'
 }
 
+bootJar {
+	mainClass = 'me.untaini.sharingmemo.SharingMemoApplication'
+	//mainClassName = 'me.untaini.sharingmemo.SharingMemoApplication'
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
