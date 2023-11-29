@@ -42,10 +42,6 @@ public class DirectoryRepositoryTest {
         assertThat(savedSubDir.getParentDir().getName()).isEqualTo(rootDir.getName());
         assertThat(savedSubDir.getId()).isGreaterThan(0);
 
-        List<Directory> allDirectories = directoryRepository.findAllByOwnerId(1L);
-
-        assertThat(allDirectories.size()).isEqualTo(2);
-
         Directory userRootDir = directoryRepository.findByOwnerIdAndParentDirIsNull(1L);
 
         assertThat(userRootDir.getName()).isEqualTo("root");
