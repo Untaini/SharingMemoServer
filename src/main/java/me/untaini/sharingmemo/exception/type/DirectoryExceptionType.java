@@ -11,7 +11,6 @@ public enum DirectoryExceptionType implements BaseExceptionType {
     OWNER_NOT_MATCH(HttpStatus.BAD_REQUEST, "디렉토리를 소유하지 않았습니다."),
     EXIST_SAME_NAME(HttpStatus.CONFLICT, "같은 이름이 디렉토리에 있습니다."),
     ALREADY_HAS_SAME_NAME(HttpStatus.BAD_REQUEST, "해당 디렉토리는 이미 그 이름을 가지고 있습니다."),
-    EXIST_OPENED_DESCENDENT_MEMO(HttpStatus.BAD_REQUEST, "편집중인 메모가 있기 때문에 디렉토리를 삭제할 수 없습니다."),
     CANNOT_CHANGE_ROOT_DIRECTORY_NAME(HttpStatus.BAD_REQUEST, "루트 디렉토리의 이름은 바꿀 수 없습니다."),
     CANNOT_DELETE_ROOT_DIRECTORY(HttpStatus.BAD_REQUEST, "루트 디렉토리는 삭제할 수 없습니다.");
 
