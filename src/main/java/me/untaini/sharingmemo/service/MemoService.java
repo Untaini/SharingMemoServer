@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 public class MemoService {
@@ -126,6 +127,18 @@ public class MemoService {
         MemoSession session = memoSessionRepository.getReferenceById(requestDTO.getSessionId());
 
         memoSessionRepository.delete(session);
+    }
+
+    public void deleteMemosInSelectedDirectories(List<Long> directoryIdList) {
+        List<Long> memoIdList = memoRepository.findAllByDirectory_IdIn(directoryIdList).stream()
+                .map(Memo::getId)
+                .toList();
+
+        if (memoSessionRepository.existsMemoSessionsByMemoIdIn(memoIdList)) {
+            throw new MemoException(MemoExceptionType.EXIST_OPENED_DESCENDENT_MEMO);
+        }
+
+        memoRepository.deleteAllByIdInBatch(memoIdList);
     }
 
     private Memo getMemoById(Long memoId) {
