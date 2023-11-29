@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @Service
@@ -132,7 +133,7 @@ public class DirectoryService {
             throw new DirectoryException(DirectoryExceptionType.CANNOT_DELETE_ROOT_DIRECTORY);
         }
 
-        directoryRepository.delete(directory);
+        deleteDescendentDirectoriesAndSelf(directory);
     }
 
     private Directory getDirectoryById(Long directoryId) {
@@ -150,6 +151,28 @@ public class DirectoryService {
                 .filter(childDir -> childDir.getName().equals(name))
                 .findAny()
                 .ifPresent(childDir -> { throw new DirectoryException(DirectoryExceptionType.EXIST_SAME_NAME); });
+    }
+
+    @Transactional
+    public void deleteDescendentDirectoriesAndSelf(Directory directory) {
+        List<Directory> directoryList = directoryRepository.findAllByOwnerIdAndParentDirIsNotNull(directory.getOwnerId());
+
+        List<Long> directoryIdList = flattened(directory, directoryList)
+                .map(Directory::getId)
+                .toList();
+
+        memoService.deleteMemosInSelectedDirectories(directoryIdList);
+
+        directoryRepository.deleteAllById(directoryIdList);
+    }
+
+    private Stream<Directory> flattened(Directory directory, List<Directory> directoryList) {
+        return Stream.concat(
+                Stream.of(directory),
+                directoryList.stream()
+                        .filter(dir -> dir.getParentDir().getId().equals(directory.getId()))
+                        .flatMap(dir -> flattened(dir, directoryList))
+        );
     }
 
 }

@@ -34,7 +34,7 @@ public class MemoRepositoryTest {
 
         Memo savedMemo = memoRepository.save(memo);
 
-        assertThat(savedMemo.getUuid()).isNotNull();
+        assertThat(savedMemo.getId()).isNotNull();
         assertThat(savedMemo.getName()).isEqualTo("test");
         assertThat(savedMemo.getDirectory().getName()).isEqualTo("root");
         assertThat(rootDir.getChildMemos().size()).isEqualTo(1);
