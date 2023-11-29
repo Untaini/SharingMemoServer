@@ -2,14 +2,12 @@ package me.untaini.sharingmemo.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.untaini.sharingmemo.dto.DirectoryCreateResponseDTO;
 import me.untaini.sharingmemo.dto.UserRegisterRequestDTO;
 import me.untaini.sharingmemo.dto.UserRegisterResponseDTO;
 import me.untaini.sharingmemo.entity.User;
 import me.untaini.sharingmemo.exception.UserException;
 import me.untaini.sharingmemo.exception.type.UserExceptionType;
 import me.untaini.sharingmemo.mapper.UserMapper;
-import me.untaini.sharingmemo.service.DirectoryService;
 import me.untaini.sharingmemo.service.HttpSessionService;
 import me.untaini.sharingmemo.service.UserService;
 import org.junit.jupiter.api.DisplayName;
