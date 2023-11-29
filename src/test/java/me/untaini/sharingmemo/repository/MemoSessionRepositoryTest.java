@@ -33,25 +33,25 @@ public class MemoSessionRepositoryTest {
         Memo memo = Memo.builder()
                 .ownerId(1L)
                 .name("test_memo")
-                .body("test_message")
+                .content("test_message")
                 .directory(directory)
                 .build();
 
         memoRepository.save(memo);
 
         MemoSession memoSession = MemoSession.builder()
-                .ownerId(1L)
-                .memoUuid(memo.getUuid())
+                .memoId(memo.getId())
+                .sessionId("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
                 .build();
 
         MemoSession savedMemoSession = memoSessionRepository.save(memoSession);
 
-        assertThat(savedMemoSession.getMemoUuid()).isEqualTo(memo.getUuid());
+        assertThat(savedMemoSession.getMemoId()).isEqualTo(memo.getId());
 
-        MemoSession foundMemoSession = memoSessionRepository.findByMemoUuid(memo.getUuid());
+        MemoSession foundMemoSession = memoSessionRepository.findByMemoId(memo.getId());
 
-        assertThat(foundMemoSession.getUuid()).isEqualTo(savedMemoSession.getUuid());
-        assertThat(memoSessionRepository.existsByMemoUuid(memo.getUuid())).isTrue();
+        assertThat(foundMemoSession.getMemoId()).isEqualTo(savedMemoSession.getMemoId());
+        assertThat(memoSessionRepository.existsByMemoId(memo.getId())).isTrue();
     }
 
 }

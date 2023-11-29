@@ -29,6 +29,9 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private DirectoryService directoryService;
+
     @Test
     @DisplayName("회원가입 성공")
     public void testRegisterSuccess() {
@@ -48,6 +51,8 @@ public class UserServiceTest {
                 .willReturn(user);
         given(userRepository.findBySid(userRequest.getId()))
                 .willReturn(user);
+        given(directoryService.createRootDirectory(user.getId()))
+                .willReturn(1L);
 
         //when
         UserRegisterResponseDTO userResponse = userService.register(userRequest);
