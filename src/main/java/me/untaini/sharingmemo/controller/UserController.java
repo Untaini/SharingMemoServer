@@ -30,10 +30,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userRegisterResponseDTO);
     }
 
-    @DeleteMapping("/unregister")
+    @PostMapping("/unregister")
     public void unregister(@RequestBody UserLoginRequestDTO userLoginRequestDTO) {
         userService.unregister(userLoginRequestDTO);
-
     }
 
     @PostMapping("/login")
