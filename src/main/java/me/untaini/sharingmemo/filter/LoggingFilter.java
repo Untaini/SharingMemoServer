@@ -25,7 +25,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
 
-        log.info("|[REQUEST] {} {}", request.getMethod(), request.getRequestURI());
-        log.info("|[RESPONSE] {}", HttpStatus.valueOf(response.getStatus()));
+        log.info("[REQUEST] {} {}", request.getMethod(), request.getRequestURI());
+        log.info("[RESPONSE] {}", HttpStatus.valueOf(response.getStatus()));
     }
  }
