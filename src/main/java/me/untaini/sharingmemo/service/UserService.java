@@ -29,7 +29,7 @@ public class UserService {
         }
 
         if (!userRegisterRequestDTO.getPassword().equals(userRegisterRequestDTO.getConfirmPassword())) {
-            throw new UserException(UserExceptionType.NOT_MATCH_PASSWORD);
+            throw new UserException(UserExceptionType.NOT_MATCH_PASSWORD_AND_CONFIRM_PASSWORD);
         }
 
         User user = UserMapper.INSTANCE.userRegisterRequestDTOToUser(userRegisterRequestDTO);
@@ -64,12 +64,8 @@ public class UserService {
     }
 
     private void checkLoginCondition(User user, String password) {
-        if (user == null) {
-            throw new UserException(UserExceptionType.NOT_EXIST_ID);
-        }
-
-        if (!user.getPassword().equals(password)) {
-            throw new UserException(UserExceptionType.NOT_MATCH_PASSWORD);
+        if (user == null || !user.getPassword().equals(password)) {
+            throw new UserException(UserExceptionType.NOT_MATCH_ID_OR_PASSWORD);
         }
     }
 
