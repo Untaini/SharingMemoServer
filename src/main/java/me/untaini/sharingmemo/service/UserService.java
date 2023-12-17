@@ -9,6 +9,7 @@ import me.untaini.sharingmemo.mapper.UserMapper;
 import me.untaini.sharingmemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,6 +32,9 @@ public class UserService {
         if (!userRegisterRequestDTO.getPassword().equals(userRegisterRequestDTO.getConfirmPassword())) {
             throw new UserException(UserExceptionType.NOT_MATCH_PASSWORD_AND_CONFIRM_PASSWORD);
         }
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        userRegisterRequestDTO.setPassword(passwordEncoder.encode(userRegisterRequestDTO.getPassword()));
 
         User user = UserMapper.INSTANCE.userRegisterRequestDTOToUser(userRegisterRequestDTO);
 
@@ -64,7 +68,9 @@ public class UserService {
     }
 
     private void checkLoginCondition(User user, String password) {
-        if (user == null || !user.getPassword().equals(password)) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             throw new UserException(UserExceptionType.NOT_MATCH_ID_OR_PASSWORD);
         }
     }
